@@ -10,6 +10,7 @@ const server = http.createServer(app);
 const allowedSocketOrigins = [
   process.env.CLIENT_URL,
   "http://localhost:5173",
+  "https://pulsebridge-inky.vercel.app/",
 ].filter(Boolean);
 
 const io = new Server(server, {
