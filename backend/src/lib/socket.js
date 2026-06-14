@@ -41,19 +41,26 @@ const userSocketMap = {}; // { userId: socketId }
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  const userId = socket.handshake.query.userId;
-  if (userId && userId !== "undefined") {
-    userSocketMap[userId] = socket.id;
+  const initialUserId = socket.handshake.auth?.userId || socket.handshake.query?.userId;
+  if (initialUserId && initialUserId !== "undefined") {
+    userSocketMap[initialUserId] = socket.id;
   }
 
-  // Send updated online users to ALL clients
+  socket.on("join", (userId) => {
+    if (!userId || userId === "undefined") return;
+    userSocketMap[userId] = socket.id;
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+  });
+
+  // Send updated online users to all clients right away
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   // === DISCONNECT ===
   socket.on("disconnect", (reason) => {
     console.log("User disconnected:", socket.id, "Reason:", reason);
-    if (userId) {
-      delete userSocketMap[userId];
+    const currentUserId = Object.keys(userSocketMap).find((id) => userSocketMap[id] === socket.id);
+    if (currentUserId) {
+      delete userSocketMap[currentUserId];
       io.emit("getOnlineUsers", Object.keys(userSocketMap));
     }
   });

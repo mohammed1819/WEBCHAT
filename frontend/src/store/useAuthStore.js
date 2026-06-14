@@ -93,7 +93,7 @@ export const useAuthStore = create((set, get) => ({
   const socketServerUrl = rawSocketBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
   const socket = io(socketServerUrl, {
-    query: { userId: authUser._id },
+    auth: { userId: authUser._id },
     withCredentials: true,
     path: "/socket.io/",
   });
@@ -102,6 +102,7 @@ export const useAuthStore = create((set, get) => ({
 
   socket.on("connect", () => {
     console.log("Connected to Socket.IO:", socket.id);
+    socket.emit("join", authUser._id);
   });
 
   socket.on("getOnlineUsers", (userIds) => {
