@@ -9,8 +9,10 @@ const server = http.createServer(app);
 // === FIXED CORS & CONFIG ===
 const allowedSocketOrigins = [
   process.env.CLIENT_URL,
+  process.env.CLIENT_URI,
+  process.env.FRONTEND_URL,
   "http://localhost:5173",
-  "https://pulsebridge-inky.vercel.app/",
+  "https://pulsebridge-inky.vercel.app",
 ].filter(Boolean);
 
 const io = new Server(server, {

@@ -85,10 +85,12 @@ export const useAuthStore = create((set, get) => ({
   const { authUser } = get();
   if (!authUser || get().socket?.connected) return;
 
-  const socketServerUrl =
+  const rawSocketBase =
     import.meta.env.MODE === "development"
       ? "http://localhost:5001"
-      : undefined;
+      : import.meta.env.VITE_API_URL || "https://webchat-4fs4.onrender.com";
+
+  const socketServerUrl = rawSocketBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
   const socket = io(socketServerUrl, {
     query: { userId: authUser._id },
