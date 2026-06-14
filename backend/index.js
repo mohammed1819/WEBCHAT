@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import fs from "fs";
 import path from "path";
 import { connectDB } from "./src/lib/db.js";
 import authRoutes from "./src/routes/auth.route.js";
@@ -40,10 +41,17 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
-  });
+  const clientBuildPath = path.join(__dirname, "../frontend/dist");
+  const clientIndexPath = path.join(clientBuildPath, "index.html");
+
+  if (fs.existsSync(clientIndexPath)) {
+    app.use(express.static(clientBuildPath));
+    app.get("*", (req, res) => {
+      res.sendFile(clientIndexPath);
+    });
+  } else {
+    console.warn("Frontend dist not found; backend will run as API-only in production.");
+  }
 }
 
 server.listen(PORT, () => {
