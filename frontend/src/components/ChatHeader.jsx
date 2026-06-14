@@ -22,6 +22,11 @@ const ChatHeader = () => {
             <p className="text-sm text-base-content/70">
               {onlineUsers.includes(selectedUser._id) ? "Online" : "Offline"}
             </p>
+            {selectedUser.statusMessage && (
+              <p className="text-xs text-base-content/50 truncate max-w-sm">
+                {selectedUser.statusMessage}
+              </p>
+            )}
           </div>
         </div>
 

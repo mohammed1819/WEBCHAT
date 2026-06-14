@@ -18,6 +18,7 @@ const SignUpPage = () => {
     fullName: "",
     email: "",
     password: "",
+    statusMessage: "Ready to connect",
   });
 
   const { signup, isSigningUp } = useAuthStore();
@@ -27,6 +28,7 @@ const SignUpPage = () => {
     if (!formData.email.trim()) return toast.error("Email is required");
     if (!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email format");
     if (!formData.password) return toast.error("Password is required");
+    if (!formData.statusMessage.trim()) return toast.error("Status message is required");
     if (formData.password.length < 6)
       return toast.error("Password must be at least 6 characters");
     return true;
@@ -49,8 +51,8 @@ const SignUpPage = () => {
             >
               <MessageCircle className="size-6 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mt-2">Create Account</h1>
-            <p className="text-base-content/60">Sign Up</p>
+            <h1 className="text-3xl font-bold mt-2">Join PulseBridge</h1>
+            <p className="text-base-content/60">Create your realtime profile</p>
           </div>
         </div>
 
@@ -73,6 +75,21 @@ const SignUpPage = () => {
                 }
               />
             </div>
+          </div>
+
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text font-medium">Status message</span>
+            </label>
+            <input
+              type="text"
+              className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+              placeholder="Ready to connect"
+              value={formData.statusMessage}
+              onChange={(e) =>
+                setFormData({ ...formData, statusMessage: e.target.value })
+              }
+            />
           </div>
           <div className="form-control">
             <label className="label">

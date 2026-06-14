@@ -4,9 +4,9 @@ import bcrypt from "bcryptjs";
 import cloudinary from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
-  const { fullName, email, password } = req.body;
+  const { fullName, email, password, statusMessage } = req.body;
   try {
-    if (!fullName || !email || !password) {
+    if (!fullName || !email || !password || !statusMessage) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -25,6 +25,7 @@ export const signup = async (req, res) => {
       fullName,
       email,
       password: hashedPassword,
+      statusMessage,
     });
 
     if (newUser) {
@@ -36,6 +37,7 @@ export const signup = async (req, res) => {
         fullName: newUser.fullName,
         email: newUser.email,
         profilePic: newUser.profilePic,
+        statusMessage: newUser.statusMessage,
       });
     } else {
       res.status(400).json({ message: "Invalid user data" });
@@ -67,6 +69,7 @@ export const login = async (req, res) => {
       fullName: user.fullName,
       email: user.email,
       profilePic: user.profilePic,
+      statusMessage: user.statusMessage,
     });
   } catch (error) {
     console.log("Error in login controller", error.message);
@@ -86,19 +89,20 @@ export const logout = (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { profilePic } = req.body;
+    const { profilePic, fullName, statusMessage } = req.body;
     const userId = req.user._id;
 
-    if (!profilePic) {
-      return res.status(400).json({ message: "Profile pic is required" });
+    const updatePayload = {
+      ...(fullName && { fullName }),
+      ...(statusMessage && { statusMessage }),
+    };
+
+    if (profilePic) {
+      const uploadResponse = await cloudinary.uploader.upload(profilePic);
+      updatePayload.profilePic = uploadResponse.secure_url;
     }
 
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { profilePic: uploadResponse.secure_url },
-      { new: true }
-    );
+    const updatedUser = await User.findByIdAndUpdate(userId, updatePayload, { new: true }).select("-password");
 
     res.status(200).json(updatedUser);
   } catch (error) {

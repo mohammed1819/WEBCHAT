@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    statusMessage: {
+      type: String,
+      default: "Ready to connect",
+    },
   },
   { timestamps: true }
 );

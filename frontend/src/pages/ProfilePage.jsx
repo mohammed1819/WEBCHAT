@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Camera,ShieldCheck,AtSign} from "lucide-react";
 
 const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
+  const [statusMessage, setStatusMessage] = useState(authUser?.statusMessage || "");
+  const [fullName, setFullName] = useState(authUser?.fullName || "");
+
+  useEffect(() => {
+    setFullName(authUser?.fullName || "");
+    setStatusMessage(authUser?.statusMessage || "");
+  }, [authUser]);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -17,7 +24,7 @@ const ProfilePage = () => {
     reader.onload = async () => {
       const base64Image = reader.result;
       setSelectedImg(base64Image);
-      await updateProfile({ profilePic: base64Image });
+      await updateProfile({ profilePic: base64Image, statusMessage, fullName });
     };
   };
 
@@ -70,7 +77,12 @@ const ProfilePage = () => {
                 <ShieldCheck className="w-4 h-4" />
                 Name
               </div>
-              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">{authUser?.fullName}</p>
+              <input
+                type="text"
+                className="w-full px-4 py-2.5 bg-base-200 rounded-lg border"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
             </div>
 
             <div className="space-y-1.5">
@@ -80,20 +92,41 @@ const ProfilePage = () => {
               </div>
               <p className="px-4 py-2.5 bg-base-200 rounded-lg border">{authUser?.email}</p>
             </div>
+
+            <div className="space-y-1.5">
+              <div className="text-sm text-zinc-400">Status message</div>
+              <input
+                type="text"
+                className="w-full px-4 py-2.5 bg-base-200 rounded-lg border"
+                value={statusMessage}
+                onChange={(e) => setStatusMessage(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="mt-6 bg-base-300 rounded-xl p-6">
-            <h2 className="text-lg font-medium  mb-4">Account Information</h2>
+            <h2 className="text-lg font-medium mb-4">Account Information</h2>
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between py-2 border-b border-zinc-700">
                 <span>Member Since</span>
                 <span>{authUser.createdAt?.split("T")[0]}</span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-zinc-700">
+                <span>Current Status</span>
+                <span className="text-base-content/80">{authUser.statusMessage}</span>
               </div>
               <div className="flex items-center justify-between py-2">
                 <span>Account Status</span>
                 <span className="text-green-500">Active</span>
               </div>
             </div>
+            <button
+              className="btn btn-primary w-full mt-6"
+              onClick={async () => await updateProfile({ fullName, statusMessage })}
+              disabled={isUpdatingProfile}
+            >
+              {isUpdatingProfile ? "Saving..." : "Save profile"}
+            </button>
           </div>
         </div>
       </div>

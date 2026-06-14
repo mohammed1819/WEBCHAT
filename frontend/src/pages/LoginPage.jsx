@@ -29,8 +29,8 @@ const LoginPage = () => {
             >
               <MessageCircle className="size-6 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mt-2">Welcome Back</h1>
-            <p className="text-base-content/60">Sign in</p>
+            <h1 className="text-3xl font-bold mt-2">PulseBridge Login</h1>
+            <p className="text-base-content/60">Reconnect with your network</p>
           </div>
         </div>
 
