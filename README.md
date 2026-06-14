@@ -55,6 +55,27 @@ npm install
 npm run dev
 ```
 
+### 3. Docker Compose
+
+This project also includes Docker support with `docker-compose.yml` at the repo root and Dockerfiles in both `backend/` and `frontend/`.
+
+```bash
+docker compose up --build
+```
+
+This starts all three services together:
+- `mongo` on host port `27017`
+- `backend` on host port `5001`
+- `frontend` on host port `3000`
+
+The frontend container serves the built React app with Nginx and proxies `/api` and `/socket.io` requests to the backend container.
+
+To stop and remove containers:
+
+```bash
+docker compose down
+```
+
 ## Production build
 
 ### Frontend build
