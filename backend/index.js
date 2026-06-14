@@ -14,7 +14,10 @@ const __dirname = path.resolve();
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
+  process.env.CLIENT_URI,
+  process.env.FRONTEND_URL,
   "http://localhost:5173",
+  "https://pulsebridge-inky.vercel.app",
 ].filter(Boolean);
 
 app.use(
