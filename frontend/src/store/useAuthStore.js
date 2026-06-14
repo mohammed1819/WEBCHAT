@@ -85,10 +85,15 @@ export const useAuthStore = create((set, get) => ({
   const { authUser } = get();
   if (!authUser || get().socket?.connected) return;
 
-  const socket = io(undefined, {  // ← same origin
+  const socketServerUrl =
+    import.meta.env.MODE === "development"
+      ? "http://localhost:5001"
+      : undefined;
+
+  const socket = io(socketServerUrl, {
     query: { userId: authUser._id },
-    withCredentials: true,        // ← send cookies
-    path: "/socket.io/",          // ← match Nginx & backend
+    withCredentials: true,
+    path: "/socket.io/",
   });
 
   set({ socket });

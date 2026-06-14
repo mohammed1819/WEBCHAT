@@ -7,9 +7,20 @@ const app = express();
 const server = http.createServer(app);
 
 // === FIXED CORS & CONFIG ===
+const allowedSocketOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+].filter(Boolean);
+
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: (origin, callback) => {
+      if (!origin || allowedSocketOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Socket CORS policy does not allow access from ${origin}`));
+      }
+    },
     methods: ["GET", "POST"],
     credentials: true,                  // Allow cookies
   },
